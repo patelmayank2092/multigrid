@@ -38,6 +38,15 @@ std::vector<double> Solver::get_u_app(int l_level)
  return z;
 }
 
+//------------------------------ get_res -------------------------------------//
+
+std::vector<double> Solver::get_res(int l_level){
+    int x=level- l_level;
+   
+    std::vector<double> z= lev_Vec[x]->res;
+    return z;
+}
+
 ///*********************************MAPPING FUNCTION**********************************************//
 
 int map(int i,int j,int ngl)
@@ -80,6 +89,7 @@ for(size_t i=0; i<ngl_; ++i)
 	std::cout<<std::endl;
 	}
 }
+
 
 
 
@@ -215,8 +225,8 @@ int x=level-l_level;
 double ngl_= lev_Vec[x]->Grid::get_ngpValue();
 double h2_ = ((ngl_-1)*(ngl_-1)); // h2_ =(h^2)
 //std::cout<< "h sqr "<< h2_ <<std::endl ;
-double norm=0;
-double temp=0;
+//double norm=0;
+//double temp=0;
 for(int i=1;i<ngl_-1;++i)
 	{
 	for(int j=1;j<ngl_-1;++j)
@@ -227,31 +237,11 @@ for(int i=1;i<ngl_-1;++i)
 										lev_Vec[x]->u_app[map(i-1,j,ngl_)]			+
 										lev_Vec[x]->u_app[map(i+1,j,ngl_)]			-
 										(4*lev_Vec[x]->u_app[map(i,j,ngl_)])));
-		/*if(x!=0)
-		{
-		std::cout<< "\n neighbour points " << lev_Vec[x]->u_app[map(i,j-1,ngl_)] << "\n"
-						<< lev_Vec[x]->u_app[map(i,j+1,ngl_)] << "\n"
-						<<  lev_Vec[x]->u_app[map(i-1,j,ngl_)] <<"\n"
-						<<lev_Vec[x]->u_app[map(i+1,j,ngl_)] << std::endl;
-		std::cout<< "\n center point " << lev_Vec[x]->u_app[map(i,j,ngl_)] <<std::endl;
+		
 		}
-		std::cout<< lev_Vec[x]->u_app[map(i,j,ngl_)] << '\t' ;*/
-		}
-	//std::cout<<std::endl;
-	}
 	
-///////Residual Norm
-for(int i=1;i<ngl_-1;++i)
-	{
-	for(int j=1;j<ngl_-1;++j)
-		{
-			temp=lev_Vec[x]->res[map(i,j,ngl_)];
-			norm+=(temp*temp);
-		}
 	}
-norm= norm/((ngl_-2)*(ngl_-2));
-norm = sqrt(norm);
-std::cout<< "the residual norm at level " << l_level << " is " << norm << std::endl;
+
 }
 
 
@@ -276,17 +266,6 @@ for(int i=0;i<ngl_;++i)
 	{
 		if(j%2==0)
 		{	
-			/*if((j==0 || j==ngl_-1))
-			{
-			//std::cout<< "i " << i << " j " <<j<< " map " << map(i,j,ngl_) << " to " << map(i/2,j/2,ngl_1dwn) << std::endl;
-			lev_Vec[x+1]->u_app[map(i/2,j/2,ngl_1dwn)] = lev_Vec[x]->u_app[map(i,j,ngl_)];
-			}	
-			else if((i==0 || i==ngl_-1))
-			{
-			//std::cout<< "i " << i << " j " <<j<< " map " << map(i,j,ngl_) << " to " << map(i/2,j/2,ngl_1dwn) << std::endl;
-			lev_Vec[x+1]->u_app[map(i/2,j/2,ngl_1dwn)] = lev_Vec[x]->u_app[map(i,j,ngl_)];
-			}
-			else */
 			lev_Vec[x+1]->u_app[map(i/2,j/2,ngl_1dwn)]=0;	
 		}
 	}
@@ -294,33 +273,18 @@ for(int i=0;i<ngl_;++i)
 }
 
 
-/*for(int i=2;i<ngl_-2;i+=2)
-{
-	for(int j=2;j<ngl_-2;j+=2)
-	{
-	lev_Vec[x+1]->u_app[map(i/2,j/2,ngl_1dwn)]=   r.W*lev_Vec[x]->u_app[map(i-1,j,ngl_)] 		+ 
-                		               		r.C*lev_Vec[x]->u_app[map(i,j,ngl_)]   		+ 
-                                			r.E*lev_Vec[x]->u_app[map(i+1,j,ngl_)]  	+ 
-				                	r.SW*lev_Vec[x]->u_app[map(i-1,j-1,ngl_)] 	+ 
-							r.S*lev_Vec[x]->u_app[map(i,j-1,ngl_)] 		+ 
-							r.SE*lev_Vec[x]->u_app[map(i-1,j+1,ngl_)] 	+ 
-							r.N*lev_Vec[x]->u_app[map(i,j+1,ngl_)] 		+ 
-							r.NW*lev_Vec[x]->u_app[map(i+1,j-1,ngl_)] 	+ 
-							r.NE*lev_Vec[x]->u_app[map(i+1,j+1,ngl_)];
-	}
-}*/
 
 for(int i=2;i<ngl_-2;i+=2)
 {
 	for(int j=2;j<ngl_-2;j+=2)
 	{
-	lev_Vec[x+1]->frc[map(i/2,j/2,ngl_1dwn)]=    	r.W*lev_Vec[x]->res[map(i-1,j,ngl_)] 		+ 
+	lev_Vec[x+1]->frc[map(i/2,j/2,ngl_1dwn)]=    	r.W*lev_Vec[x]->res[map(i,j-1,ngl_)] 		+ 
 							r.C*lev_Vec[x]->res[map(i,j,ngl_)]   		+ 
-							r.E*lev_Vec[x]->res[map(i+1,j,ngl_)]  		+ 
+							r.E*lev_Vec[x]->res[map(i,j+1,ngl_)]  		+ 
 							r.SW*lev_Vec[x]->res[map(i-1,j-1,ngl_)] 	+ 
-							r.S*lev_Vec[x]->res[map(i,j-1,ngl_)] 		+ 
+							r.S*lev_Vec[x]->res[map(i-1,j,ngl_)] 		+ 
 							r.SE*lev_Vec[x]->res[map(i-1,j+1,ngl_)] 	+ 
-							r.N*lev_Vec[x]->res[map(i,j+1,ngl_)] 		+ 
+							r.N*lev_Vec[x]->res[map(i+1,j,ngl_)] 		+ 
 							r.NW*lev_Vec[x]->res[map(i+1,j-1,ngl_)] 	+ 
 							r.NE*lev_Vec[x]->res[map(i+1,j+1,ngl_)];
 	}
@@ -366,7 +330,7 @@ void store(double ngp_,std::vector<double>u)
 double hgl_ = 1.0 / (ngp_-1);
 
 std::ofstream mg;
-mg.open("multigrid.txt");
+mg.open("solution.txt");
 for(size_t i=0; i<ngp_; ++i)
 {
     {
@@ -377,6 +341,59 @@ for(size_t i=0; i<ngp_; ++i)
 mg.close();
 }
 
+//------------------------------------  Residual Norm --------------------//
+
+double Solver::normResidual(std::vector<double> f_res,double previous_res){
+static int count=1;
+double res=0,div_res,norm_res;
+
+
+for(size_t i=0;i<f_res.size();i++){
+
+        res+=(f_res[i] * f_res[i]);
+
+    }
+
+    div_res = res / ((ngp_-2)*(ngp_-2));
+
+    norm_res = sqrt(div_res);
+   std::cout<<"Norm of residual after V-cycle "<< norm_res<<std::endl;
+	
+	if(count>1)
+		{
+			double q = norm_res / previous_res;
+            std::cout<<"Convergence q rate after V-cycle "<< q <<std::endl;
+		}
+
+
+   
+	count++;
+
+return norm_res;
+}
+
+//--------------------------------------  Error task-5 ----------------------------------------------//
+
+void error(std::vector<double>u_h,std::vector<double>u_exact){
+
+std::ofstream mg;
+mg.open("E-Norm.txt",std::fstream::in | std::fstream::out | std::fstream::app);
+
+double norm=0.;
+
+
+for(size_t k=0;k<u_h.size();k++){
+	
+	norm+=((u_h[k]-u_exact[k])*(u_h[k]-u_exact[k]));	
+}
+    std::cout<<"Error Norm is "<<sqrt(norm)<<std::endl;
+  	mg<<u_h.size()<<"\t"<<sqrt(norm)<<"\n";
+
+mg.close();	
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------//
+
 
 //////////////////////////////Simulation///////////////////////////////////////////////////
 
@@ -385,17 +402,17 @@ void Solver::Simulation()
 int l_Level = this-> level;
 int n_Vcycle = this-> Vcycle;
 
+double r[n_Vcycle];   // store residual norm value 
 /// Initialise grid.
 Grid_int v(l_Level);
-//std::cout<< "\nInitial level = " << l_Level << " number of grid points = " << v.get_ngpValue()*v.get_ngpValue() << std::endl;
-//v.display_grid_int();
 
 /// Apply Boundary conditions.
 v.boundary_con();
-//std::cout<< "\nAfter applying BC "<< std::endl;
-//v.display_grid_int();
+std::vector<double> u_exact=v.U_exact();
+
 
 std::vector<double> u = v.get_Xvalue();
+
 
 for(int i=1; i<=n_Vcycle; ++i)
     {
@@ -403,65 +420,63 @@ for(int i=1; i<=n_Vcycle; ++i)
 
     Solver S(l_Level,i,u);
 
-    //std::cout<< "\n Restriction starts from here " << std::endl;
-        for (int j =l_Level; j>0; --j) // Pre Smoothning -> U Print -> Residual -> Residual print -> Restriction -> Force Print
+          for (int j =l_Level; j>0; --j) // Pre Smoothning -> U Print -> Residual -> Residual print -> Restriction -> Force Print
         {
         S.pre_smoothing(j); //2*S.RBGS(j);
 
-       // std::cout<< "\nAfter 2 RBGS "<< std::endl;
-       //S.display_u_app(j);
-
-
-        S.residual(j);
-        //S.display_frc(j);
-        //std::cout<< "\n Residual "<< std::endl;
-        //S.display_res(j);
-
+ 	 S.residual(j);
+  
         if(j!=1)
         {
         S.restriction(j);
-        //S.display_u_app(j-1);
-        //std::cout<< "\n Force "<< std::endl;
-        //S.display_frc(j);
-        //S.display_frc(j-1);
-        }
+       }
     }
 
         S.post_smoothing(1);
-        //std::cout<< "After 1 RBGS u at coarsest level"<<std::endl;
-        //S.display_u_app(1);
-
-    //std::cout<< "\n Prolongation starts from here " << std::endl;
-
+   
+  
     for (int k =1; k<l_Level; ++k) // Prolongation -> U Print +1 Level -> Residual -> Residual print -> Restriction -> Force Print
     {
 
         S.prolongation(k);
-        //if(k==1)
-      //  std::cout<< "\nProlongated u "<<std::endl;
-        //S.display_u_app(k+1);
-
+ 
         if(k!=1)
         {
             S.post_smoothing(k+1);
-        //    std::cout<< "After 1 RBGS u"<<std::endl;
-            //S.display_u_app(k+1);
-
-            /*if(k==l_Level-1)
-            S.display_u_app(k+1);*/
+  
         }
-    }
-
-    //std::cout<<" \n u after one v cycle " << std::endl;
-    //S.display_u_app(l_Level);
-    //Reassign u for next V-cycle.
-    u=S.get_u_app(l_Level);
-
+    
 
 }
 
-//std::cout<<" final u after " << n_Vcycle << " v cycle " << std::endl;
-/*for(size_t i=0; i<ngp_; ++i)
+ 	u=S.get_u_app(l_Level);
+	
+
+	S.residual(l_Level);
+	
+	std::vector<double> f_res=S.get_res(l_Level);
+	
+	
+	r[i]=S.normResidual(f_res,r[i-1]);
+
+
+
+/*
+std::cout<<"\n U exact solution ...."<<std::endl;
+	
+for(size_t i=0; i<ngp_; ++i)
+{
+    {
+    for(size_t j=0; j<ngp_;++j)
+    std::cout<< u_exact[i*ngp_+j] << "\t";
+    }
+std::cout<<std::endl;
+}
+
+std::cout<<"\n U Appro. solution ...."<<std::endl;
+
+
+for(size_t i=0; i<ngp_; ++i)
 {
     {
     for(size_t j=0; j<ngp_;++j)
@@ -470,6 +485,9 @@ for(int i=1; i<=n_Vcycle; ++i)
 std::cout<<std::endl;
 }*/
 
+
+}
+if(l_Level>=3 && l_Level<=8){ error(u,u_exact);  }
 store(ngp_,u);
 
 }
@@ -478,7 +496,5 @@ store(ngp_,u);
 
 Solver::~Solver()
 {
-//for(int i= 0;i<level;i++)
-//delete lev_Vec[i];
 }
 

@@ -41,7 +41,14 @@ void prolongation(int l_level);
 
 std::vector<double> get_u_app(int l_level);
 
+std::vector<double> get_res(int l_level);
+
 void Simulation();
+
+double normResidual(std::vector<double> f_res,double previous_res);
+
+//void error(std::vector<double>u_h,std::vector<double>u_exact);
+
 
 ~Solver();
 };

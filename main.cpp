@@ -28,7 +28,7 @@ S.Simulation();
 
 gettimeofday(&x,NULL);
 double end=x.tv_sec + 1e-6*x.tv_usec;
-
+std::cout<<"Run time is  ";
 std::cout<<(end-start)<<" seconds"<<std::endl;
 
 

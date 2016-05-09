@@ -118,3 +118,36 @@ for(size_t i=0; i<ngp_; ++i)
 }	
 
 
+
+//------------------------------------------------------U_exact----------------------------------------------------------------//
+
+std::vector<double> Grid_int::U_exact(){
+
+double pi=3.141592653589793238;
+double h_=get_hValue();
+double ngp_=get_ngpValue();
+double temp = h_*pi;
+std::vector<double> u_ex;
+
+	for(size_t i=0;i<ngp_;++i){
+	for(size_t j=0;j<ngp_;++j){
+
+		u_ex.push_back(sin(j*temp)*sinh(i*temp));
+				}
+		}	
+
+return u_ex;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+

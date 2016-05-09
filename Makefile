@@ -17,7 +17,7 @@ main: main.cpp Grid_int.cpp Grid_int.o
 	g++ -c -O3 -Wall -Winline -Wshadow -std=c++11 main.cpp -o main.o
 
 clean:
-	rm -rf *.txt
+	rm -rf solution.txt
 	rm -rf *.o
 	rm mgsolve
 

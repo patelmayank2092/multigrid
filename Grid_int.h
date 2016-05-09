@@ -58,6 +58,7 @@ std::vector<double> get_Xvalue();
 
 ///@brief function to apply boundary conditions ///
 void boundary_con(); 
+std::vector<double> U_exact();
 
 };
 #endif
